@@ -1,6 +1,16 @@
 CRM for Sales Teams
 This is a single-file CRM (Customer Relationship Management) application designed for sales teams, built as a take-home project. The application serves as a foundational tool for sales representatives to manage their leads and opportunities, while providing managers with a complete, holistic view of the team's data.
 
+To log in as a manager, you can use the credentials for the manager user that are pre-populated in the code.
+
+Simply enter the following information into the login form:
+
+Email: manager@example.com
+
+Password: password
+
+The application will recognize this user as a manager and grant you access to see all leads and opportunities, regardless of who the owner is.
+
 The entire application—including the frontend UI, core business logic, and data storage—is contained within a single index.html file, demonstrating a complete, full-stack application within a simplified structure.
 
 Project Objectives

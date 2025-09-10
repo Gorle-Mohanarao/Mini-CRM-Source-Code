@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini CRM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <div id="app" class="bg-white p-8 rounded-xl shadow-2xl w-full max-w-4xl min-h-[70vh] flex flex-col transition-all duration-300">
+        <!-- Message Box -->
+        <div id="message-box" class="hidden fixed top-4 right-4 z-50 p-4 rounded-lg text-white font-semibold shadow-lg transition-transform transform translate-x-full"></div>
+
+        <!-- Login Page -->
+        <div id="login-page" class="flex-grow flex flex-col items-center justify-center transition-opacity duration-300">
+            <h1 class="text-4xl font-extrabold text-gray-800 mb-6">Mini CRM</h1>
+            <p class="text-gray-500 mb-8">Sales Team Lead & Opportunity Management</p>
+            <div class="w-full max-w-sm">
+                <div class="bg-white p-8 rounded-lg shadow-md">
+                    <h2 class="text-2xl font-bold text-center text-gray-700 mb-6">Login</h2>
+                    <form id="login-form">
+                        <div class="mb-4">
+                            <label for="email" class="block text-gray-700 text-sm font-medium mb-2">Email</label>
+                            <input type="email" id="email" name="email" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="rep@example.com" required>
+                        </div>
+                        <div class="mb-6">
+                            <label for="password" class="block text-gray-700 text-sm font-medium mb-2">Password</label>
+                            <input type="password" id="password" name="password" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="password" required>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">Log In</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main App Content -->
+        <div id="main-content" class="hidden flex-grow flex flex-col transition-opacity duration-300">
+            <header class="flex justify-between items-center mb-6 border-b pb-4">
+                <h1 id="app-title" class="text-2xl md:text-3xl font-bold text-gray-800"></h1>
+                <div class="flex items-center gap-4">
+                    <span id="user-info" class="text-sm font-medium text-gray-600"></span>
+                    <button id="logout-btn" class="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors duration-300">Logout</button>
+                </div>
+            </header>
+            
+            <nav class="flex space-x-2 md:space-x-4 mb-6">
+                <button id="leads-btn" class="nav-btn bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-300">
+                    <i class="fas fa-users mr-2"></i>Leads
+                </button>
+                <button id="opportunities-btn" class="nav-btn bg-gray-200 text-gray-700 font-semibold py-2 px-4 rounded-lg hover:bg-gray-300 transition-colors duration-300">
+                    <i class="fas fa-handshake mr-2"></i>Opportunities
+                </button>
+            </nav>
+
+            <!-- Leads Section -->
+            <div id="leads-section" class="flex-grow">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-700">Leads</h2>
+                    <button id="add-lead-btn" class="bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-300">
+                        <i class="fas fa-plus mr-2"></i>Add Lead
+                    </button>
+                </div>
+                <div class="overflow-x-auto rounded-lg shadow-md">
+                    <table class="min-w-full bg-white rounded-lg">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Name</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Email</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Status</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leads-table-body" class="divide-y divide-gray-200">
+                            <!-- Leads will be rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Opportunities Section -->
+            <div id="opportunities-section" class="hidden flex-grow">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-bold text-gray-700">Opportunities</h2>
+                </div>
+                <div class="overflow-x-auto rounded-lg shadow-md">
+                    <table class="min-w-full bg-white rounded-lg">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Title</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Value</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Stage</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold text-gray-600">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="opportunities-table-body" class="divide-y divide-gray-200">
+                            <!-- Opportunities will be rendered here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Modal for Add/Edit Lead -->
+            <div id="lead-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden">
+                <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 id="lead-modal-title" class="text-2xl font-bold text-gray-700">Add Lead</h3>
+                        <button id="close-lead-modal-btn" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+                    </div>
+                    <form id="lead-form">
+                        <input type="hidden" id="lead-id">
+                        <div class="mb-4">
+                            <label for="lead-name" class="block text-gray-700 text-sm font-medium mb-2">Name</label>
+                            <input type="text" id="lead-name" name="name" class="w-full p-3 border border-gray-300 rounded-lg" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="lead-email" class="block text-gray-700 text-sm font-medium mb-2">Email</label>
+                            <input type="email" id="lead-email" name="email" class="w-full p-3 border border-gray-300 rounded-lg" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="lead-phone" class="block text-gray-700 text-sm font-medium mb-2">Phone</label>
+                            <input type="tel" id="lead-phone" name="phone" class="w-full p-3 border border-gray-300 rounded-lg">
+                        </div>
+                        <div class="mb-6">
+                            <label for="lead-status" class="block text-gray-700 text-sm font-medium mb-2">Status</label>
+                            <select id="lead-status" name="status" class="w-full p-3 border border-gray-300 rounded-lg">
+                                <option value="New">New</option>
+                                <option value="Contacted">Contacted</option>
+                                <option value="Qualified">Qualified</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">Save Lead</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Modal for Edit Opportunity -->
+            <div id="opportunity-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center p-4 hidden">
+                <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-lg">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 id="opportunity-modal-title" class="text-2xl font-bold text-gray-700">Update Opportunity</h3>
+                        <button id="close-opportunity-modal-btn" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+                    </div>
+                    <form id="opportunity-form">
+                        <input type="hidden" id="opportunity-id">
+                        <div class="mb-4">
+                            <label for="opportunity-title" class="block text-gray-700 text-sm font-medium mb-2">Title</label>
+                            <input type="text" id="opportunity-title" name="title" class="w-full p-3 border border-gray-300 rounded-lg" required readonly>
+                        </div>
+                        <div class="mb-4">
+                            <label for="opportunity-value" class="block text-gray-700 text-sm font-medium mb-2">Value</label>
+                            <input type="number" id="opportunity-value" name="value" class="w-full p-3 border border-gray-300 rounded-lg" required>
+                        </div>
+                        <div class="mb-6">
+                            <label for="opportunity-stage" class="block text-gray-700 text-sm font-medium mb-2">Stage</label>
+                            <select id="opportunity-stage" name="stage" class="w-full p-3 border border-gray-300 rounded-lg">
+                                <option value="Discovery">Discovery</option>
+                                <option value="Proposal">Proposal</option>
+                                <option value="Won">Won</option>
+                                <option value="Lost">Lost</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors">Save Opportunity</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Data Store Simulation using localStorage
+        const DB_KEY = 'mini_crm_db';
+        
+        function getDb() {
+            try {
+                const db = JSON.parse(localStorage.getItem(DB_KEY));
+                return db || { users: [], leads: [], opportunities: [] };
+            } catch (e) {
+                console.error("Failed to parse localStorage DB:", e);
+                return { users: [], leads: [], opportunities: [] };
+            }
+        }
+
+        function setDb(db) {
+            localStorage.setItem(DB_KEY, JSON.stringify(db));
+        }
+
+        function initDb() {
+            let db = getDb();
+            if (db.users.length === 0) {
+                db.users = [
+                    { id: 'rep1', name: 'Alice', email: 'rep@example.com', password: 'password', role: 'rep' },
+                    { id: 'rep2', name: 'Bob', email: 'rep2@example.com', password: 'password', role: 'rep' },
+                    { id: 'manager1', name: 'Charlie', email: 'manager@example.com', password: 'password', role: 'manager' }
+                ];
+                db.leads = [
+                    { id: 'L1', name: 'Bob Buyer', email: 'bob@buyer.com', phone: '9999999999', status: 'New', ownerId: 'rep1' },
+                    { id: 'L2', name: 'Jane Doe', email: 'jane@doe.com', phone: '8888888888', status: 'Contacted', ownerId: 'rep1' },
+                    { id: 'L3', name: 'Mike Smith', email: 'mike@smith.com', phone: '7777777777', status: 'New', ownerId: 'rep2' }
+                ];
+                db.opportunities = [
+                    { id: 'O1', title: 'Bob Buyer - First Deal', value: 5000, stage: 'Discovery', ownerId: 'rep1', leadId: 'L1' }
+                ];
+                setDb(db);
+            }
+        }
+        
+        // JWT Simulation
+        function createJwt(user) {
+            return btoa(JSON.stringify({ id: user.id, role: user.role }));
+        }
+
+        function decodeJwt(token) {
+            try {
+                return JSON.parse(atob(token));
+            } catch (e) {
+                return null;
+            }
+        }
+        
+        // State
+        let currentUser = null;
+        let activePage = 'leads';
+
+        // DOM Elements
+        const loginPage = document.getElementById('login-page');
+        const loginForm = document.getElementById('login-form');
+        const mainContent = document.getElementById('main-content');
+        const userInfoSpan = document.getElementById('user-info');
+        const logoutBtn = document.getElementById('logout-btn');
+        const appTitle = document.getElementById('app-title');
+
+        const leadsBtn = document.getElementById('leads-btn');
+        const opportunitiesBtn = document.getElementById('opportunities-btn');
+        const leadsSection = document.getElementById('leads-section');
+        const opportunitiesSection = document.getElementById('opportunities-section');
+        const leadsTableBody = document.getElementById('leads-table-body');
+        const opportunitiesTableBody = document.getElementById('opportunities-table-body');
+        const addLeadBtn = document.getElementById('add-lead-btn');
+
+        const leadModal = document.getElementById('lead-modal');
+        const leadModalTitle = document.getElementById('lead-modal-title');
+        const closeLeadModalBtn = document.getElementById('close-lead-modal-btn');
+        const leadForm = document.getElementById('lead-form');
+        const leadIdInput = document.getElementById('lead-id');
+
+        const opportunityModal = document.getElementById('opportunity-modal');
+        const opportunityModalTitle = document.getElementById('opportunity-modal-title');
+        const closeOpportunityModalBtn = document.getElementById('close-opportunity-modal-btn');
+        const opportunityForm = document.getElementById('opportunity-form');
+        const opportunityIdInput = document.getElementById('opportunity-id');
+
+        const messageBox = document.getElementById('message-box');
+
+        // Helper functions
+        function showMessage(message, type = 'success') {
+            messageBox.textContent = message;
+            messageBox.className = `fixed top-4 right-4 z-50 p-4 rounded-lg text-white font-semibold shadow-lg transition-transform transform translate-x-0 ${type === 'success' ? 'bg-green-500' : 'bg-red-500'}`;
+            setTimeout(() => {
+                messageBox.classList.add('translate-x-full');
+            }, 3000);
+        }
+
+        function showPage(pageId) {
+            const pages = {
+                leads: leadsSection,
+                opportunities: opportunitiesSection
+            };
+            
+            Object.values(pages).forEach(page => page.classList.add('hidden'));
+            pages[pageId].classList.remove('hidden');
+
+            const navBtns = [leadsBtn, opportunitiesBtn];
+            navBtns.forEach(btn => btn.classList.remove('bg-blue-600', 'text-white'));
+            navBtns.forEach(btn => btn.classList.add('bg-gray-200', 'text-gray-700'));
+
+            if (pageId === 'leads') {
+                leadsBtn.classList.remove('bg-gray-200', 'text-gray-700');
+                leadsBtn.classList.add('bg-blue-600', 'text-white');
+            } else {
+                opportunitiesBtn.classList.remove('bg-gray-200', 'text-gray-700');
+                opportunitiesBtn.classList.add('bg-blue-600', 'text-white');
+            }
+            activePage = pageId;
+            renderData();
+        }
+
+        function renderLeads() {
+            const db = getDb();
+            let leadsToRender = db.leads;
+
+            if (currentUser.role === 'rep') {
+                leadsToRender = leadsToRender.filter(lead => lead.ownerId === currentUser.id);
+            }
+
+            leadsTableBody.innerHTML = '';
+            leadsToRender.forEach(lead => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-100 transition-colors duration-200';
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-sm text-gray-700">${lead.name}</td>
+                    <td class="py-3 px-4 text-sm text-gray-700">${lead.email}</td>
+                    <td class="py-3 px-4 text-sm text-gray-700"><span class="px-2 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(lead.status)}">${lead.status}</span></td>
+                    <td class="py-3 px-4 text-sm text-gray-700">
+                        <div class="flex space-x-2">
+                            <button onclick="editLead('${lead.id}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteLead('${lead.id}')" class="text-red-600 hover:text-red-800 transition-colors"><i class="fas fa-trash"></i></button>
+                            ${currentUser.role === 'rep' && lead.status !== 'Qualified' ? `<button onclick="convertLead('${lead.id}')" class="text-green-600 hover:text-green-800 transition-colors"><i class="fas fa-arrow-right"></i> Convert</button>` : ''}
+                        </div>
+                    </td>
+                `;
+                leadsTableBody.appendChild(tr);
+            });
+        }
+
+        function renderOpportunities() {
+            const db = getDb();
+            let opportunitiesToRender = db.opportunities;
+
+            if (currentUser.role === 'rep') {
+                opportunitiesToRender = opportunitiesToRender.filter(opp => opp.ownerId === currentUser.id);
+            }
+
+            opportunitiesTableBody.innerHTML = '';
+            opportunitiesToRender.forEach(opp => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-gray-100 transition-colors duration-200';
+                tr.innerHTML = `
+                    <td class="py-3 px-4 text-sm text-gray-700">${opp.title}</td>
+                    <td class="py-3 px-4 text-sm text-gray-700">$${opp.value.toLocaleString()}</td>
+                    <td class="py-3 px-4 text-sm text-gray-700"><span class="px-2 py-1 rounded-full text-xs font-medium ${getStageBadgeClass(opp.stage)}">${opp.stage}</span></td>
+                    <td class="py-3 px-4 text-sm text-gray-700">
+                        <button onclick="editOpportunity('${opp.id}')" class="text-blue-600 hover:text-blue-800 transition-colors"><i class="fas fa-edit"></i></button>
+                    </td>
+                `;
+                opportunitiesTableBody.appendChild(tr);
+            });
+        }
+
+        function getStatusBadgeClass(status) {
+            switch(status) {
+                case 'New': return 'bg-blue-100 text-blue-800';
+                case 'Contacted': return 'bg-yellow-100 text-yellow-800';
+                case 'Qualified': return 'bg-green-100 text-green-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function getStageBadgeClass(stage) {
+            switch(stage) {
+                case 'Discovery': return 'bg-purple-100 text-purple-800';
+                case 'Proposal': return 'bg-indigo-100 text-indigo-800';
+                case 'Won': return 'bg-green-100 text-green-800';
+                case 'Lost': return 'bg-red-100 text-red-800';
+                default: return 'bg-gray-100 text-gray-800';
+            }
+        }
+
+        function renderData() {
+            if (activePage === 'leads') {
+                renderLeads();
+            } else {
+                renderOpportunities();
+            }
+        }
+
+        // Event Listeners
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = e.target.email.value;
+            const password = e.target.password.value;
+            
+            const db = getDb();
+            const user = db.users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                const token = createJwt(user);
+                localStorage.setItem('jwt', token);
+                currentUser = user;
+                appStartup();
+            } else {
+                showMessage('Invalid email or password.', 'error');
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('jwt');
+            currentUser = null;
+            loginPage.classList.remove('hidden');
+            mainContent.classList.add('hidden');
+            appTitle.textContent = '';
+            userInfoSpan.textContent = '';
+            loginForm.reset();
+            showMessage('Logged out successfully.', 'success');
+        });
+
+        leadsBtn.addEventListener('click', () => showPage('leads'));
+        opportunitiesBtn.addEventListener('click', () => showPage('opportunities'));
+        addLeadBtn.addEventListener('click', () => {
+            leadForm.reset();
+            leadIdInput.value = '';
+            leadModalTitle.textContent = 'Add Lead';
+            leadModal.classList.remove('hidden');
+        });
+        closeLeadModalBtn.addEventListener('click', () => leadModal.classList.add('hidden'));
+        closeOpportunityModalBtn.addEventListener('click', () => opportunityModal.classList.add('hidden'));
+
+        leadForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const db = getDb();
+            const id = leadIdInput.value;
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            if (id) {
+                // Update Lead
+                const index = db.leads.findIndex(l => l.id === id);
+                if (index !== -1 && (currentUser.role === 'manager' || db.leads[index].ownerId === currentUser.id)) {
+                    db.leads[index] = { ...db.leads[index], ...data };
+                    setDb(db);
+                    showMessage('Lead updated successfully.', 'success');
+                } else {
+                    showMessage('You do not have permission to edit this lead.', 'error');
+                }
+            } else {
+                // Add Lead
+                const newLead = { ...data, id: 'L' + Date.now(), ownerId: currentUser.id };
+                db.leads.push(newLead);
+                setDb(db);
+                showMessage('Lead added successfully.', 'success');
+            }
+            leadModal.classList.add('hidden');
+            renderLeads();
+        });
+
+        opportunityForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const db = getDb();
+            const id = opportunityIdInput.value;
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            const index = db.opportunities.findIndex(o => o.id === id);
+            if (index !== -1 && (currentUser.role === 'manager' || db.opportunities[index].ownerId === currentUser.id)) {
+                db.opportunities[index] = { ...db.opportunities[index], ...data };
+                setDb(db);
+                showMessage('Opportunity updated successfully.', 'success');
+            } else {
+                showMessage('You do not have permission to edit this opportunity.', 'error');
+            }
+            opportunityModal.classList.add('hidden');
+            renderOpportunities();
+        });
+
+        // Global functions for inline event handlers
+        window.editLead = (id) => {
+            const db = getDb();
+            const lead = db.leads.find(l => l.id === id);
+            if (!lead || (currentUser.role === 'rep' && lead.ownerId !== currentUser.id)) {
+                showMessage('You do not have permission to edit this lead.', 'error');
+                return;
+            }
+            leadModalTitle.textContent = 'Edit Lead';
+            leadIdInput.value = lead.id;
+            document.getElementById('lead-name').value = lead.name;
+            document.getElementById('lead-email').value = lead.email;
+            document.getElementById('lead-phone').value = lead.phone;
+            document.getElementById('lead-status').value = lead.status;
+            leadModal.classList.remove('hidden');
+        };
+
+        window.deleteLead = (id) => {
+            const db = getDb();
+            const leadIndex = db.leads.findIndex(l => l.id === id);
+            if (leadIndex === -1 || (currentUser.role === 'rep' && db.leads[leadIndex].ownerId !== currentUser.id)) {
+                showMessage('You do not have permission to delete this lead.', 'error');
+                return;
+            }
+
+            const isConfirmed = window.confirm('Are you sure you want to delete this lead?');
+            if (isConfirmed) {
+                db.leads.splice(leadIndex, 1);
+                setDb(db);
+                showMessage('Lead deleted successfully.', 'success');
+                renderLeads();
+            }
+        };
+
+        window.convertLead = (id) => {
+            const db = getDb();
+            const lead = db.leads.find(l => l.id === id);
+            if (!lead || lead.ownerId !== currentUser.id) {
+                showMessage('You do not have permission to convert this lead.', 'error');
+                return;
+            }
+
+            // Update lead status
+            lead.status = 'Qualified';
+            
+            // Create new opportunity
+            const newOpportunity = {
+                id: 'O' + Date.now(),
+                title: `${lead.name} - New Opportunity`,
+                value: 0, // Set a default value
+                stage: 'Discovery',
+                ownerId: lead.ownerId,
+                leadId: lead.id
+            };
+            db.opportunities.push(newOpportunity);
+            setDb(db);
+            showMessage('Lead converted to an Opportunity successfully.', 'success');
+            renderLeads();
+            showPage('opportunities');
+        };
+
+        window.editOpportunity = (id) => {
+            const db = getDb();
+            const opportunity = db.opportunities.find(o => o.id === id);
+            if (!opportunity || (currentUser.role === 'rep' && opportunity.ownerId !== currentUser.id && currentUser.role !== 'manager')) {
+                showMessage('You do not have permission to edit this opportunity.', 'error');
+                return;
+            }
+            if (currentUser.role === 'rep' && opportunity.ownerId !== currentUser.id) {
+                showMessage('You do not have permission to edit this opportunity.', 'error');
+                return;
+            }
+
+            opportunityModalTitle.textContent = 'Update Opportunity';
+            opportunityIdInput.value = opportunity.id;
+            document.getElementById('opportunity-title').value = opportunity.title;
+            document.getElementById('opportunity-value').value = opportunity.value;
+            document.getElementById('opportunity-stage').value = opportunity.stage;
+            opportunityModal.classList.remove('hidden');
+        };
+
+        function appStartup() {
+            const token = localStorage.getItem('jwt');
+            if (token) {
+                const payload = decodeJwt(token);
+                if (payload) {
+                    const db = getDb();
+                    currentUser = db.users.find(u => u.id === payload.id && u.role === payload.role);
+                    if (currentUser) {
+                        loginPage.classList.add('hidden');
+                        mainContent.classList.remove('hidden');
+                        appTitle.textContent = `${currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)} Dashboard`;
+                        userInfoSpan.textContent = `Welcome, ${currentUser.name}`;
+                        showPage('leads');
+                        return;
+                    }
+                }
+            }
+            loginPage.classList.remove('hidden');
+            mainContent.classList.add('hidden');
+        }
+
+        window.onload = () => {
+            initDb();
+            appStartup();
+        };
+
+    </script>
+</body>
+</html>

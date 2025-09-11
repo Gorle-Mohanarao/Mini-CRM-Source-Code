@@ -1,6 +1,8 @@
 CRM for Sales Teams
 This is a single-file CRM (Customer Relationship Management) application designed for sales teams, built as a take-home project. The application serves as a foundational tool for sales representatives to manage their leads and opportunities, while providing managers with a complete, holistic view of the team's data.
 
+Project Link : https://gorle-mohanarao.github.io/Mini-CRM-Source-Code/
+
 To test the admin login, you can use the credentials for the pre-populated admin user that was added to the code.
 
 Email: admin@example.com
